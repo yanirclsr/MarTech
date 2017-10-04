@@ -31,7 +31,7 @@
 			} else
 				var expires = "";
 			document.cookie = this.cookieNamePrefix + name + "=" + value
-					+ expires + ";domain=." + getDomain() + ";  path=/";
+					+ expires + ";domain=." + topDomain() + ";  path=/";
 		},
 
 		readCookie : function(name) {
