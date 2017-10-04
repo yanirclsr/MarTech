@@ -1,4 +1,5 @@
-# UTM Capturing and Storing in Cookies
+UTM Capturing and Storing in Cookies
+------------------------------------
 
 This Javascript code will capture website visitors' UTM paramters as they visit your website.
 It captures both first and last interactions and storing the data in the browser cookies for 365 days (see: cookieExpiryDays variable in the code).
