@@ -1,20 +1,64 @@
 <script>
 function notYou(){
+	
+	//by default the script deletes only the _mkto_trk cookie only. Change to false if it should remove all cookies:
+	var deleteMktoTrkCookieOnly = true;
+	
+	//by default the script stripe only the mkt_tok and aliId URL parmas. Change to false if it should remove all URL params:
+	var clearMktoUrlParamsOnly = true;
+
+	//retreive all browser cookies
     var cookies = document.cookie.split("; ");
+	
+	//loop through all cookie and delete 
     for (var c = 0; c < cookies.length; c++) {
+    	var cookie = cookies[c];
         var d = window.location.hostname.split(".");
-        while (d.length > 0) {
-            var cookieBase = encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) + '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=' + d.join('.') + ' ;path=';
-            var p = location.pathname.split('/');
-            document.cookie = cookieBase + '/';
-            while (p.length > 0) {
-                document.cookie = cookieBase + p.join('/');
-                p.pop();
-            };
-            d.shift();
+        
+        //handles desired cookies
+        if(cookie.indexOf("_mkto_trk") > -1 ||	!deleteMktoTrkCookieOnly){
+	        while (d.length > 0) {
+	            var cookieBase = encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) + '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=' + d.join('.') + ' ;path=';
+	            var p = location.pathname.split('/');
+	            document.cookie = cookieBase + '/';
+	            while (p.length > 0) {
+	                document.cookie = cookieBase + p.join('/');
+	                p.pop();
+	            };
+	            d.shift();
+	        }        	
         }
     }
-    location.reload()
+	
+    function removeParam(key, url) {
+    	var sourceURL = url;
+        var rtn = sourceURL.split("?")[0],
+            param,
+            params_arr = [],
+            queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+        if (queryString !== "") {
+            params_arr = queryString.split("&");
+            for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+                param = params_arr[i].split("=")[0];
+                if (param === key) {
+                    params_arr.splice(i, 1);
+                }
+            }
+            rtn = rtn + "?" + params_arr.join("&");
+        }
+        return rtn;
+    }
+	
+    //removing all URL params and reload the page
+    if(clearMktoUrlParamsOnly){
+    	var url = removeParam("mkt_tok", location.href);
+    	url = removeParam("aliId",url);
+    	location.href = url;
+    }else{    	
+    	var url = location.href.substring(0, location.href.indexOf('?'));
+    	location.href = url; 
+    }
 }
 </script>
+
 <a onclick="notYou();">Not You? Click Here</a>
