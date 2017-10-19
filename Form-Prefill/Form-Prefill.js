@@ -15,14 +15,14 @@
 		    	
 		    	for (var key in dataObjParsed) {
 		    		console.log(key);
-	    			if (dataObjParsed.hasOwnProperty(key) && dataObjParsed[key] != "null") {
-	    				$("#" + key).val(decodeURIComponent(dataObjParsed[key]));
+	    			if (dataObjParsed.hasOwnProperty(key) && dataObjParsed[key] != "null" && document.getElementById(key) != null) {
+	    				document.getElementById(key).value = decodeURIComponent(dataObjParsed[key]);
 	    				console.log(key + " >> " + dataObjParsed[key]);
 		    		}
 		    	}
 		    }
 		} catch (e) {
-			console.log(e);
+			console.error(e);
 		}
 	 
 	});
