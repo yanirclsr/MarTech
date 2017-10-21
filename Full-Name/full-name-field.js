@@ -1,6 +1,16 @@
 (function(){
-	if(window.splitFullNameActive) return;
+	if(window.splitFullNameActive || !window.MktoForms2) return;
 	else window.splitFullNameActive = true;
+	
+	//support IE
+	if (!Array.prototype.indexOf) {
+	    Array.prototype.indexOf = function(obj, start) {
+	         for (var i = (start || 0), j = this.length; i < j; i++) {
+	             if (this[i] === obj) { return i; }
+	         }
+	         return -1;
+	    }
+	}
 	
 	MktoForms2.whenReady(function(form) {
 		
