@@ -23,6 +23,12 @@
 	
 	MktoForms2.whenReady(function(form) {
 		
+		if(!window.fullNameAppended){
+			window.fullNameAppended = true;
+		}else{
+			return;
+		}
+		
 		function splitFullName(a, b, c) {
 			
 			var fullNameFields = document.getElementsByName(c);
