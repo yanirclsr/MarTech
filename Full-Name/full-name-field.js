@@ -59,9 +59,7 @@
 			
 				
 			function appendOnInput() {
-				console.log("appendOnInput");
 				var fullName = document.getElementsByName(c)[0].value;
-				console.log(fullName);
 				if ((fullName.match(/ /g) || []).length === 0
 						|| fullName.substring(fullName.indexOf(" ") + 1,
 								fullName.length) === "") {
