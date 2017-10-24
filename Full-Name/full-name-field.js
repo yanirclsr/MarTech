@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2017, Yanir Calisar, Tel Aviv, Israel (ycalisar at gmail.com)
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this code and associated documentation files, to deal in the code without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the code.
+ * The user assumes responsibility for determining appropriate use of the code, for consequences of its use, and for checking functionality against other reliable sources. 
+ * We suggest citation in publications as with any code developement work. No warrantee is given.
+ * Please help improve the code by sending suggestions or new code back.
+ */
+
 (function(){
 	if(window.splitFullNameActive || !window.MktoForms2) return;
 	else window.splitFullNameActive = true;
@@ -16,11 +25,35 @@
 		
 		function splitFullName(a, b, c) {
 			
+			var fullNameFields = document.getElementsByName(c);
+			var fnameFields = document.getElementsByName(a);
+			var lnameFields = document.getElementsByName(b);
+			
 			String.prototype.capitalize = function() {
 				return this.charAt(0).toUpperCase() + this.slice(1);
 			};
 			
-			document.getElementsByName(c)[0].oninput = function() {
+			// prefill initial Values
+			if (document.getElementsByName(c)[0].value.length < 2
+					&& document.getElementsByName(b)[0].value.length > 2
+					&& document.getElementsByName(a)[0].value.length > 2) {
+				var first = document.getElementsByName(a)[0].value.capitalize();
+				var last = document.getElementsByName(b)[0].value.capitalize();
+				var fullName = first + " " + last;
+				//insert full name to all the full name fields
+				for(var i = 0; i < fullNameFields.length; i++){
+					fullNameFields[i].value = fullName;
+				}
+			}
+			
+			//append on input event
+			for(var i = 0; i < fullNameFields.length; i++){
+				fullNameFields[i].oninput = function(){appendOnInput();}
+			}
+			
+				
+			function appendOnInput() {
+				console.log("appendOnInput");
 				var fullName = document.getElementsByName(c)[0].value;
 				console.log(fullName);
 				if ((fullName.match(/ /g) || []).length === 0
@@ -49,19 +82,22 @@
 					var last = fullName.substring(fullName.indexOf(" ") + 1,
 							fullName.length).capitalize();
 				}
-				document.getElementsByName(a)[0].value = first;
-				document.getElementsByName(b)[0].value = last;
+				backFill(first, last);
 			};
-			// prefill initial Values
-			if (document.getElementsByName(c)[0].value.length < 2
-					&& document.getElementsByName(b)[0].value.length > 2
-					&& document.getElementsByName(a)[0].value.length > 2) {
-				var first = document.getElementsByName(a)[0].value.capitalize();
-				var last = document.getElementsByName(b)[0].value.capitalize();
-				var fullName = first + " " + last;
-				console.log(fullName);
-				document.getElementsByName(c)[0].value = fullName;
+			
+			//back fill first and last name fields
+			function backFill(first, last){
+				
+				for(var i = 0; i < fnameFields.length; i++){
+					fnameFields[i].value = first;
+				}
+				
+				for(var i = 0; i < lnameFields.length; i++){
+					lnameFields[i].value = last;
+				}
+				
 			}
+			
 		}
 		splitFullName("FirstName", "LastName", "leadFullName");
 	});
