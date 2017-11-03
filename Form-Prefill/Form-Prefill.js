@@ -6,9 +6,9 @@
  * We suggest citation in publications as with any code developement work. No warrantee is given.
  * Please help improve the code by sending suggestions or new code back.
  */
-(function(pageUrl){
-
-	jQuery.get(pageUrl, function(data){
+(function(x){
+	if(!window.jQuery) return;
+	jQuery.get(x.pageUrl, function(data){
 	    
 	    try {
 	    	
@@ -35,4 +35,5 @@
 	 
 	});
 	
-})("go.yourdomain.com/form-landing-page.html")
+})(
+	{"pageUrl": "go.yourdomain.com/form-landing-page.html"})
