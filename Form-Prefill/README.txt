@@ -8,7 +8,7 @@ Alternativly, you can use  MktoForms2.whenReady to run this script after the for
 Notes:
 # Requires jQuery to be installed on the page - otherwise it won't run
 # Supports multiple embedded forms on the same page
-
+# It's recommended to use the minified version (Form-Prefill.min.js)
 
 --------------
 Copyright (c) 2017, Yanir Calisar, Tel Aviv, Israel (ycalisar at gmail.com)
