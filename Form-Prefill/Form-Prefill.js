@@ -23,9 +23,13 @@
 		    	
 		    	for (var key in dataObjParsed) {
 		    		console.log(key);
-	    			if (dataObjParsed.hasOwnProperty(key) && dataObjParsed[key] != "null" && document.getElementById(key) != null) {
-	    				document.getElementById(key).value = decodeURIComponent(dataObjParsed[key]);
-	    				console.log(key + " >> " + dataObjParsed[key]);
+	    			if (dataObjParsed.hasOwnProperty(key) && dataObjParsed[key] != "null" && dataObjParsed[key] != null) {
+	    				var newFields = document.getElementsByName(key);
+	    				var val = decodeURIComponent(dataObjParsed[key]);
+	    				console.log(key + " >> " + val);
+	    				for(var m=0; m<newFields.length; m++){
+	    					newFields[m].value = val;
+	    				}
 		    		}
 		    	}
 		    }
@@ -36,5 +40,5 @@
 	});
 	
 })(
-	{"pageUrl": "go.yourdomain.com/form-landing-page.html"})
+	{"pageUrl": "http://info.augury.com/OP-Prefill"})
 	
