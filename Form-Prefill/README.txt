@@ -9,6 +9,7 @@ Notes:
 # Requires jQuery to be installed on the page - otherwise it won't run
 # Supports multiple embedded forms on the same page
 # It's recommended to use the minified version (Form-Prefill.min.js)
+# Make sure both pages have use the same protocol (http / https)
 
 --------------
 Copyright (c) 2017, Yanir Calisar, Tel Aviv, Israel (ycalisar at gmail.com)
