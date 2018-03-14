@@ -8,6 +8,10 @@
  */
 
 (function() {
+
+	var STORE_COOKIES = true;
+	var STORE_LOCAL_STORAGE = true;
+
 	function topDomain() {
 		var i, h, top_level_cookie = 'top_level_domain=cookie', hostname = document.location.hostname
 				.split('.');
@@ -24,6 +28,7 @@
 
 	var utmCookie = {
 		cookieNamePrefix : "__lt_",
+		cookieCumulativePrefix: "__cu_",
 		cookieNameFirstTouchPrefix : "__ft_",
 
 		utmParams : [ "utm_source", "utm_medium", "utm_campaign", "utm_term",
@@ -33,44 +38,68 @@
 
 		// From http://www.quirksmode.org/js/cookies.html
 		createCookie : function(name, value, days) {
-			if (days) {
-				var date = new Date();
-				date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-				var expires = "; expires=" + date.toGMTString();
-			} else
-				var expires = "";
-			document.cookie = this.cookieNamePrefix + name + "=" + value
-					+ expires + ";domain=." + topDomain() + ";  path=/";
+
+			if(STORE_COOKIES) {
+                if (days) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    var expires = "; expires=" + date.toGMTString();
+                } else
+                    var expires = "";
+                document.cookie = this.cookieNamePrefix + name + "=" + value
+                    + expires + ";domain=." + topDomain() + ";  path=/";
+            }
+            if(STORE_LOCAL_STORAGE) this.createLS(name, value);
+		},
+
+		createLS: function(name, value){
+			localStorage[this.cookieNamePrefix+ name] = value;
 		},
 
 		readCookie : function(name) {
-			var nameEQ = this.cookieNamePrefix + name + "=";
-			var ca = document.cookie.split(';');
-			for (var i = 0; i < ca.length; i++) {
-				var c = ca[i];
-				while (c.charAt(0) == ' ')
-					c = c.substring(1, c.length);
-				if (c.indexOf(nameEQ) == 0)
-					return c.substring(nameEQ.length, c.length);
-			}
-			return null;
+
+			if(STORE_COOKIES) {
+                var nameEQ = this.cookieNamePrefix + name + "=";
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ')
+                        c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0)
+                        return c.substring(nameEQ.length, c.length);
+                }
+                if(STORE_LOCAL_STORAGE) this.readLS(name);
+                else return null;
+            }
+            if(STORE_LOCAL_STORAGE) this.readLS(name);
+		},
+
+		readLS: function(name){
+			var val = localStorage[this.cookieNamePrefix + name];
+			if(val == undefined) return null;
+			else return val;
 		},
 
 		checkIfFirstTouch : function() {
-			var nameEQ = this.cookieNameFirstTouchPrefix + "utm_source=";
-			var ca = document.cookie.split(';');
-			for (var i = 0; i < ca.length; i++) {
-				var c = ca[i];
-				while (c.charAt(0) == ' ')
-					c = c.substring(1, c.length);
-				if (c.indexOf(nameEQ) == 0)
-					return c.substring(nameEQ.length, c.length);
-			}
-			return null;
+			if(STORE_LOCAL_STORAGE) {
+                var nameEQ = this.cookieNameFirstTouchPrefix + "utm_source=";
+                var ca = document.cookie.split(';');
+                for (var i = 0; i < ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ')
+                        c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0)
+                        return c.substring(nameEQ.length, c.length);
+                }
+                if(STORE_LOCAL_STORAGE) this.readLS(this.cookieNameFirstTouchPrefix + "utm_source");
+				else return null;
+            }
+            if(STORE_LOCAL_STORAGE) this.readLS(this.cookieNameFirstTouchPrefix + "utm_source");
 		},
 
 		eraseCookie : function(name) {
-			this.createCookie(name, "", -1);
+			if(STORE_COOKIES) this.createCookie(name, "", -1);
+			if(STORE_LOCAL_STORAGE) delete localStorage[name];
 		},
 
 		getParameterByName : function(name) {
@@ -101,19 +130,23 @@
 			for (var i = 0; i < this.utmParams.length; i++) {
 				var param = this.utmParams[i];
 				var value = this.getParameterByName(param);
-				this.createCookie(param, value, this.cookieExpiryDays)
+				if(STORE_COOKIES) this.createCookie(param, value, this.cookieExpiryDays);
+				if(STORE_LOCAL_STORAGE) localStorage[param] = value;
 			}
 		},
 
 		writeCookieOnce : function(name, value) {
-			var existingValue = this.readCookie(name);
-			if (!existingValue) {
+
+			if (STORE_COOKIES && !this.readCookie(name)) {
 				this.createCookie(name, value, this.cookieExpiryDays);
+			}
+            if(STORE_LOCAL_STORAGE && this.readLS(name) == null){
+				this.createLS(name,value);
 			}
 		},
 
 		writeReferrerOnce : function() {
-			value = document.referrer;
+			var value = document.referrer;
 			if (value === "" || value === undefined) {
 				this.writeCookieOnce("referrer", "direct");
 			} else {
@@ -140,5 +173,6 @@
 
 	if (utmCookie.utmPresentInUrl()) {
 		utmCookie.writeUtmCookieFromParams();
+		
 	}
-})()
+})();
