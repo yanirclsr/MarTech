@@ -24,7 +24,7 @@
 				return h;
 			}
 		}
-		return document.location.protocol + "//" + document.location.host;
+		return document.location.hostname;
 	}
 
 	var utmCookie = {
