@@ -1,0 +1,27 @@
+<script>
+    (function(){
+        window.watchObj = {
+            "percent": "{{Video Percent}}",
+            "cTime": "{{Video Current Time}}",
+            "duration": "{{Video Duration}}",
+            "provider": "{{Video Provider}}",
+            "status" : "{{Video Status}}",
+            "title": encodeURI("{{Video Title}}"),
+            "url": "{{Video URL}}",
+            "visible": "{{Video Visible}}"
+        }
+        console.log(watchObj);
+
+        //Send events to MKTO
+        if(window.Munchkin){
+
+            Munchkin.munchkinFunction('clickLink', {
+                    'href': '/video-events/' + watchObj.title
+                    + "?percent=" + watchObj.percent
+                    + "&cTime=" + watchObj.cTime
+                    + "&duration=" + watchObj.duration
+                    + "&provider=" + watchObj.provider
+                }
+            )};
+    })();
+</script>
