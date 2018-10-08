@@ -7,7 +7,7 @@
  * Please help improve the code by sending suggestions or new code back.
  */
 
-(function() {
+(function(callback) {
 
 	var STORE_COOKIES = true;
 	var STORE_LOCAL_STORAGE = true;
@@ -29,7 +29,6 @@
 
 	var utmCookie = {
 		cookieNamePrefix : "__lt_",
-		cookieCumulativePrefix: "__cu_",
 		cookieNameFirstTouchPrefix : "__ft_",
 
 		utmParams : [ "utm_source", "utm_medium", "utm_campaign", "utm_term",
@@ -37,7 +36,6 @@
 
 		cookieExpiryDays : 365,
 
-		// From http://www.quirksmode.org/js/cookies.html
 		createCookie : function(name, value, days) {
 
 			if(STORE_COOKIES) {
@@ -81,8 +79,14 @@
 			else return val;
 		},
 
-		checkIfFirstTouch : function() {
-			if(STORE_LOCAL_STORAGE) {
+        eraseCookie : function(name) {
+            if(STORE_COOKIES) this.createCookie(name, "", -1);
+            if(STORE_LOCAL_STORAGE) delete localStorage[name];
+        },
+
+
+        checkIfFirstTouch : function() {
+			if(STORE_COOKIES) {
                 var nameEQ = this.cookieNameFirstTouchPrefix + "utm_source=";
                 var ca = document.cookie.split(';');
                 for (var i = 0; i < ca.length; i++) {
@@ -98,10 +102,6 @@
             if(STORE_LOCAL_STORAGE) this.readLS(this.cookieNameFirstTouchPrefix + "utm_source");
 		},
 
-		eraseCookie : function(name) {
-			if(STORE_COOKIES) this.createCookie(name, "", -1);
-			if(STORE_LOCAL_STORAGE) delete localStorage[name];
-		},
 
 		getParameterByName : function(name) {
 			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -146,23 +146,26 @@
 			}
 		},
 
-		writeReferrerOnce : function() {
+		writeReferrerOnce : function(isFirstTouch) {
 			var value = document.referrer;
+
+			var key = isFirstTouch ? utmCookie.cookieNameFirstTouchPrefix + "referrer" : utmCookie.cookieNamePrefix + "referrer";
+
 			if (value === "" || value === undefined) {
-				this.writeCookieOnce("referrer", "direct");
+				this.writeCookieOnce(key, "direct");
 			} else {
-				this.writeCookieOnce("referrer", value);
+				this.writeCookieOnce(key, value);
 			}
 		},
 
 		referrer : function() {
-			return this.readCookie("referrer");
+			return this.readCookie(utmCookie.cookieNamePrefix + "referrer");
 		}
 	};
 
 	if (!utmCookie.checkIfFirstTouch()) {
 		utmCookie.cookieNamePrefix = utmCookie.cookieNameFirstTouchPrefix;
-		utmCookie.writeReferrerOnce();
+		utmCookie.writeReferrerOnce(true);
 
 		if (utmCookie.utmPresentInUrl()) {
 			utmCookie.writeUtmCookieFromParams();
@@ -170,10 +173,63 @@
 		utmCookie.cookieNamePrefix = "__lt_";
 	}
 
-	utmCookie.writeReferrerOnce();
+	utmCookie.writeReferrerOnce(false);
 
 	if (utmCookie.utmPresentInUrl()) {
 		utmCookie.writeUtmCookieFromParams();
-		
 	}
-})();
+
+	if(typeof callback === "function"){
+
+        var utms = {};
+
+        for (var i = 0; i < this.utmParams.length; i++) {
+            var param = this.utmParams[i];
+            var value = this.getParameterByName(param);
+            if(STORE_COOKIES) this.createCookie(param, value, this.cookieExpiryDays);
+            if(STORE_LOCAL_STORAGE) localStorage[param] = value;
+        }
+
+		var utms = {
+            "__lt_utm_source": "xyz",
+            "__lt_utm_medium": "xyz",
+            "__lt_utm_campaign": "xyz",
+            "__lt_utm_term": "xyz",
+            "__lt_utm_content": "xyz",
+            "__lt_utm_referrer": "xyz",
+
+            "__ft_utm_source": "xyz",
+            "__ft_utm_medium": "xyz",
+            "__ft_utm_campaign": "xyz",
+            "__ft_utm_term": "xyz",
+            "__ft_utm_content": "xyz",
+            "__ft_utm_referrer": "xyz",
+        }
+		callback(utms);
+	}
+
+})(function(utms){
+	/*
+		Put here any callback function you want to be triggered after the cookies have been created
+		utms = {
+			"__lt_utm_source": "xyz",
+			"__lt_utm_medium": "xyz",
+			"__lt_utm_campaign": "xyz",
+			"__lt_utm_term": "xyz",
+			"__lt_utm_content": "xyz",
+			"__lt_utm_referrer": "xyz",
+
+			"__ft_utm_source": "xyz",
+			"__ft_utm_medium": "xyz",
+			"__ft_utm_campaign": "xyz",
+			"__ft_utm_term": "xyz",
+			"__ft_utm_content": "xyz",
+			"__ft_utm_referrer": "xyz",
+		}
+		Examples:
+		1. console.log("the last touch source is: " + utms.__lt_utm_source);
+		2. $("#my_utm_source_field").val(utms__lt_utm_source);
+
+	*/
+
+});
