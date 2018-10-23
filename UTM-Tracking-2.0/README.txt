@@ -35,5 +35,3 @@ Disclaimer:
  * We suggest citation in publications as with any code developement work. No warrantee is given.
  * Please help improve the code by sending suggestions or new code back.
  */
-
-
