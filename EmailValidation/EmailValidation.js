@@ -1,4 +1,22 @@
 (function(){
+    window.MktoForms2 = window.MktoForms2 || {};
+    MktoForms2.whenReady(function (f) {
+
+        f.onSubmit(function(){
+            alert("Do you really want to submit the form?");
+        });
+
+    });
+})();
+
+
+
+
+
+
+
+
+(function(){
 
 
     document.addEventListener('input', function (evt) {
