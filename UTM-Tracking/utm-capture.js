@@ -183,10 +183,10 @@
 
         var utms = {};
 
-        for (var i = 0; i < this.utmParams.length; i++) {
-            var param = this.utmParams[i];
-            var value = this.getParameterByName(param);
-            if(STORE_COOKIES) this.createCookie(param, value, this.cookieExpiryDays);
+        for (var i = 0; i < utmCookie.utmParams.length; i++) {
+            var param = utmCookie.utmParams[i];
+            var value = utmCookie.getParameterByName(param);
+            if(STORE_COOKIES) utmCookie.createCookie(param, value, this.cookieExpiryDays);
             if(STORE_LOCAL_STORAGE) localStorage[param] = value;
         }
 
