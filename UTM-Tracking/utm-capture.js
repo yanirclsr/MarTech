@@ -7,229 +7,135 @@
  * Please help improve the code by sending suggestions or new code back.
  */
 
-(function(callback) {
+(function () {
 
-	var STORE_COOKIES = true;
-	var STORE_LOCAL_STORAGE = true;
+    if (!Array.prototype.indexOf) { Array.prototype.indexOf = function(obj, start) { for (var i = (start || 0), j = this.length; i < j; i++) { if (this[i] === obj) { return i; } } return -1; } }
 
-	function topDomain() {
-		var i, h, top_level_cookie = 'top_level_domain=cookie', hostname = document.location.hostname
-				.split('.');
-		for (i = hostname.length - 1; i >= 0; i--) {
-			h = hostname.slice(i).join('.');
-			document.cookie = top_level_cookie + ';domain=.' + h + ';';
-			if (document.cookie.indexOf(top_level_cookie) > -1) {
-				document.cookie = top_level_cookie.split('=')[0] + '=;domain=.'
-						+ h + ';expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-				return h;
-			}
-		}
-		return document.location.hostname;
-	}
+    var settings = {
+        cookieNameFirstTouchPrefix : "__ft_",
+        cookieNamePrefix : "__lt_",
+        utmParams : [ "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content" ],
+        cookieExpiryDays : 365,
+        isFirstTouch: null
+    };
 
-	var utmCookie = {
-		cookieNamePrefix : "__lt_",
-		cookieNameFirstTouchPrefix : "__ft_",
-
-		utmParams : [ "utm_source", "utm_medium", "utm_campaign", "utm_term",
-				"utm_content" ],
-
-		cookieExpiryDays : 365,
-
-		createCookie : function(name, value, days) {
-
-			if(STORE_COOKIES) {
-                if (days) {
-                    var date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    var expires = "; expires=" + date.toGMTString();
-                } else
-                    var expires = "";
-                document.cookie = this.cookieNamePrefix + name + "=" + value
-                    + expires + ";domain=." + topDomain() + ";  path=/";
-            }
-            if(STORE_LOCAL_STORAGE) this.createLS(name, value);
-		},
-
-		createLS: function(name, value){
-			localStorage[this.cookieNamePrefix+ name] = value;
-		},
-
-		readCookie : function(name) {
-
-			if(STORE_COOKIES) {
-                var nameEQ = this.cookieNamePrefix + name + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ')
-                        c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) == 0)
-                        return c.substring(nameEQ.length, c.length);
+    var utils = {
+        topDomain: function() {
+            var i, h, top_level_cookie = 'top_level_domain=cookie', hostname = document.location.hostname
+                .split('.');
+            for (i = hostname.length - 1; i >= 0; i--) {
+                h = hostname.slice(i).join('.');
+                document.cookie = top_level_cookie + ';domain=.' + h + ';';
+                if (document.cookie.indexOf(top_level_cookie) > -1) {
+                    document.cookie = top_level_cookie.split('=')[0] + '=;domain=.'
+                        + h + ';expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                    return h;
                 }
-                if(STORE_LOCAL_STORAGE) this.readLS(name);
-                else return null;
             }
-            if(STORE_LOCAL_STORAGE) this.readLS(name);
-		},
-
-		readLS: function(name){
-			var val = localStorage[this.cookieNamePrefix + name];
-			if(val == undefined) return null;
-			else return val;
-		},
-
-        eraseCookie : function(name) {
-            if(STORE_COOKIES) this.createCookie(name, "", -1);
-            if(STORE_LOCAL_STORAGE) delete localStorage[name];
+            return document.location.hostname;
         },
-
-
-        checkIfFirstTouch : function() {
-			if(STORE_COOKIES) {
-                var nameEQ = this.cookieNameFirstTouchPrefix + "utm_source=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ')
-                        c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) == 0)
-                        return c.substring(nameEQ.length, c.length);
-                }
-                if(STORE_LOCAL_STORAGE) this.readLS(this.cookieNameFirstTouchPrefix + "utm_source");
-				else return null;
+        isFirstTouch: function(){
+            if(settings.isFirstTouch != null) return settings.isFirstTouch;
+            else {
+                var f = document.cookie.indexOf(settings.cookieNameFirstTouchPrefix) === -1;
+                console.log("first touch: " + f);
+                settings.isFirstTouch = f;
+                return f;
             }
-            if(STORE_LOCAL_STORAGE) this.readLS(this.cookieNameFirstTouchPrefix + "utm_source");
-		},
 
-
-		getParameterByName : function(name) {
-			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-			var regexS = "[\\?&]" + name + "=([^&#]*)";
-			var regex = new RegExp(regexS);
-			var results = regex.exec(window.location.search);
-			if (results == null) {
-				return "";
-			} else {
-				return decodeURIComponent(results[1].replace(/\+/g, " "));
-			}
-		},
-
-		utmPresentInUrl : function() {
-			var present = false;
-			for (var i = 0; i < this.utmParams.length; i++) {
-				var param = this.utmParams[i];
-				var value = this.getParameterByName(param);
-				if (value != "" && value != undefined) {
-					present = true;
-				}
-			}
-			return present;
-		},
-
-		writeUtmCookieFromParams : function() {
-			for (var i = 0; i < this.utmParams.length; i++) {
-				var param = this.utmParams[i];
-				var value = this.getParameterByName(param);
-				if(STORE_COOKIES) this.createCookie(param, value, this.cookieExpiryDays);
-				if(STORE_LOCAL_STORAGE) localStorage[param] = value;
-			}
-		},
-
-		writeCookieOnce : function(name, value) {
-
-			if (STORE_COOKIES && !this.readCookie(name)) {
-				this.createCookie(name, value, this.cookieExpiryDays);
-			}
-            if(STORE_LOCAL_STORAGE && this.readLS(name) == null){
-				this.createLS(name,value);
-			}
-		},
-
-		writeReferrerOnce : function(isFirstTouch) {
-			var value = document.referrer;
-
-			var key = isFirstTouch ? utmCookie.cookieNameFirstTouchPrefix + "referrer" : utmCookie.cookieNamePrefix + "referrer";
-
-			if (value === "" || value === undefined) {
-				this.writeCookieOnce(key, "direct");
-			} else {
-				this.writeCookieOnce(key, value);
-			}
-		},
-
-		referrer : function() {
-			return this.readCookie(utmCookie.cookieNamePrefix + "referrer");
-		}
-	};
-
-	if (!utmCookie.checkIfFirstTouch()) {
-		utmCookie.cookieNamePrefix = utmCookie.cookieNameFirstTouchPrefix;
-		utmCookie.writeReferrerOnce(true);
-
-		if (utmCookie.utmPresentInUrl()) {
-			utmCookie.writeUtmCookieFromParams();
-		}
-		utmCookie.cookieNamePrefix = "__lt_";
-	}
-
-	utmCookie.writeReferrerOnce(false);
-
-	if (utmCookie.utmPresentInUrl()) {
-		utmCookie.writeUtmCookieFromParams();
-	}
-
-	if(typeof callback === "function"){
-
-        var utms = {};
-
-        for (var i = 0; i < utmCookie.utmParams.length; i++) {
-            var param = utmCookie.utmParams[i];
-            var value = utmCookie.getParameterByName(param);
-            if(STORE_COOKIES) utmCookie.createCookie(param, value, this.cookieExpiryDays);
-            if(STORE_LOCAL_STORAGE) localStorage[param] = value;
         }
+    };
 
-		var utms = {
-            "__lt_utm_source": "xyz",
-            "__lt_utm_medium": "xyz",
-            "__lt_utm_campaign": "xyz",
-            "__lt_utm_term": "xyz",
-            "__lt_utm_content": "xyz",
-            "__lt_utm_referrer": "xyz",
+    var cookies = {
+        create : function(name, value, days) {
 
-            "__ft_utm_source": "xyz",
-            "__ft_utm_medium": "xyz",
-            "__ft_utm_campaign": "xyz",
-            "__ft_utm_term": "xyz",
-            "__ft_utm_content": "xyz",
-            "__ft_utm_referrer": "xyz",
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toGMTString();
+            } else
+                var expires = "";
+
+            var c = name + "=" + value
+                + expires + ";domain=." + utils.topDomain() + ";  path=/";
+            document.cookie = c;
+        },
+        writeCookieOnce: function (name, value) {
+
+            if(utils.isFirstTouch()){
+                this.create(settings.cookieNameFirstTouchPrefix + name,
+                    value,
+                    settings.cookieExpiryDays);
+
+            }
+            this.create(settings.cookieNamePrefix + name,
+                value,
+                settings.cookieExpiryDays);
+        },
+        read: function(name) {
+
+            var nameEQ = this.cookieNamePrefix + name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ')
+                    c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0)
+                    return c.substring(nameEQ.length, c.length);
+            }
+        },
+        erase: function(name) {
+            this.createCookie(name, "", -1);
         }
-		callback(utms);
-	}
+    }
 
-})(function(utms){
-	/*
-		Put here any callback function you want to be triggered after the cookies have been created
-		utms = {
-			"__lt_utm_source": "xyz",
-			"__lt_utm_medium": "xyz",
-			"__lt_utm_campaign": "xyz",
-			"__lt_utm_term": "xyz",
-			"__lt_utm_content": "xyz",
-			"__lt_utm_referrer": "xyz",
+    var base = {
+        getParameterByName : function(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+            var regexS = "[\\?&]" + name + "=([^&#]*)";
+            var regex = new RegExp(regexS);
+            var results = regex.exec(window.location.search);
+            if (results == null) {
+                return "";
+            } else {
+                return decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+        },
+        utmPresentInUrl : function() {
+            for (var i = 0; i < settings.utmParams.length; i++) {
+                var param = settings.utmParams[i];
+                var value = this.getParameterByName(param);
+                if (value !== "" && value !== undefined) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        writeUtmCookieFromParams : function() {
+            if(this.utmPresentInUrl()){
+                for (var i = 0; i < settings.utmParams.length; i++) {
+                    var param = settings.utmParams[i];
+                    var value = this.getParameterByName(param);
+                    cookies.writeCookieOnce(param, value);
+                }
+            }
+        },
+        writeReferrer: function () {
+            var value = document.referrer;
+            var key = "referrer";
+            if (value && value !== "" && value !== undefined && value.indexOf(document.location.host) === -1) {
+                console.log(value);
+                cookies.writeCookieOnce(key, value);
+            }else{
+                cookies.writeCookieOnce(key, "direct");
+            }
+        },
+        storeParamsInCookies: function(){
+            this.writeUtmCookieFromParams();
+            this.writeReferrer();
+        }
+    };
 
-			"__ft_utm_source": "xyz",
-			"__ft_utm_medium": "xyz",
-			"__ft_utm_campaign": "xyz",
-			"__ft_utm_term": "xyz",
-			"__ft_utm_content": "xyz",
-			"__ft_utm_referrer": "xyz",
-		}
-		Examples:
-		1. console.log("the last touch source is: " + utms.__lt_utm_source);
-		2. $("#my_utm_source_field").val(utms__lt_utm_source);
+    base.storeParamsInCookies();
 
-	*/
-
-});
+})();
