@@ -43,6 +43,12 @@
                 return f;
             }
 
+        },
+        isNewSession: function(){
+            var c = "__utm_tracking_session";
+            var r = cookies.read(c) === undefined;
+            cookies.create(c, true, 1 / 48);
+            return r;
         }
     };
 
@@ -74,7 +80,7 @@
         },
         read: function(name) {
 
-            var nameEQ = this.cookieNamePrefix + name + "=";
+            var nameEQ = name + "=";
             var ca = document.cookie.split(';');
             for (var i = 0; i < ca.length; i++) {
                 var c = ca[i];
@@ -131,8 +137,10 @@
             }
         },
         storeParamsInCookies: function(){
-            this.writeUtmCookieFromParams();
-            this.writeReferrer();
+            if(utils.isNewSession()){
+                this.writeUtmCookieFromParams();
+                this.writeReferrer();
+            }
         }
     };
 
