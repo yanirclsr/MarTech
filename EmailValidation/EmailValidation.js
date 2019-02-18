@@ -9,11 +9,45 @@
 
 (function(){
     window.MktoForms2 = window.MktoForms2 || {};
-    MktoForms2.whenReady(function (f) {
+    MktoForms2.whenReady(function (form) {
 
-        f.onSubmit(function(){
-            alert("Do you really want to submit the form?");
-        });
+        function validateStracture(email) {
+            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+        
+        // function focusError() {
+        //
+        // }
+
+        var formEl = form.getFormElem()[0], emailEl = formEl.querySelector('#Email');
+
+        //check if there's an email field in the form
+        debugger;
+        var vals = form.getValues();
+        console.log(vals);
+        if(vals["Email"] != undefined){
+
+            debugger;
+
+            form.submittable(false);
+
+            form.onValidate(function(builtInValidation) {
+
+                if (!builtInValidation) return;
+
+                var email = form.getValues()["Email"];
+
+                if(!validateStracture(email)){
+                    emailEl.classList.add('mktoInvalid');
+                    return;
+                }else {
+                    emailEl.classList.remove('mktoInvalid');
+                    form.submittable(true);
+                }
+
+            })
+        }
 
     });
 })();
@@ -23,49 +57,49 @@
 
 
 
-
-
-(function(){
-
-
-    document.addEventListener('input', function (evt) {
-        if(evt != undefined
-            && evt.target.value != undefined
-            && evt.target.value.indexOf("@") > -1){
-
-            console.log("evt != undefined && evt.target.value != undefined");
-            var email = evt.target.value;
-            console.log(evt.target.value);
-            if(!isValidEmail(email))
-                console.log("invalid email: "+ email);
-            else
-                console.log("valid email: "+ email);
-
-            if(!isNotFreeEmail(email))
-                console.log("is free email: " + email)
-            else
-                console.log("is not free email: "+ email);
-
-        }
-    });
-
-    function isValidEmail(email){
-
-        if(!/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z]{2,4})+$/.test(email)){
-            return false;
-        }
-        return true;
-    }
-
-    function isNotFreeEmail(email){
-        if(!/^([\w-.]+@(?!gmail\.com)(?!yahoo\.com)(?!hotmail\.com)([\w-]+.)+[\w-]{2,4})?$/
-            .test(email)) return false;
-
-        return true;
-    }
-
-    // function
-
-
-
-})();
+//
+//
+// (function(){
+//
+//
+//     document.addEventListener('input', function (evt) {
+//         if(evt != undefined
+//             && evt.target.value != undefined
+//             && evt.target.value.indexOf("@") > -1){
+//
+//             console.log("evt != undefined && evt.target.value != undefined");
+//             var email = evt.target.value;
+//             console.log(evt.target.value);
+//             if(!isValidEmail(email))
+//                 console.log("invalid email: "+ email);
+//             else
+//                 console.log("valid email: "+ email);
+//
+//             if(!isNotFreeEmail(email))
+//                 console.log("is free email: " + email)
+//             else
+//                 console.log("is not free email: "+ email);
+//
+//         }
+//     });
+//
+//     function isValidEmail(email){
+//
+//         if(!/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z]{2,4})+$/.test(email)){
+//             return false;
+//         }
+//         return true;
+//     }
+//
+//     function isNotFreeEmail(email){
+//         if(!/^([\w-.]+@(?!gmail\.com)(?!yahoo\.com)(?!hotmail\.com)([\w-]+.)+[\w-]{2,4})?$/
+//             .test(email)) return false;
+//
+//         return true;
+//     }
+//
+//     // function
+//
+//
+//
+// })();

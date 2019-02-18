@@ -9,6 +9,16 @@
 
 (function () {
 
+    if (window.doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || 'msTrackingProtectionEnabled' in window.external) {
+
+        // The browser supports Do Not Track!
+        if (window.doNotTrack == "1" || navigator.doNotTrack == "yes" || navigator.doNotTrack == "1" || navigator.msDoNotTrack == "1" || window.external.msTrackingProtectionEnabled()) {
+            console.log("Do not track is on");
+            return;
+        }
+    }
+
+
     if (!Array.prototype.indexOf) { Array.prototype.indexOf = function(obj, start) { for (var i = (start || 0), j = this.length; i < j; i++) { if (this[i] === obj) { return i; } } return -1; } }
 
     var settings = {
