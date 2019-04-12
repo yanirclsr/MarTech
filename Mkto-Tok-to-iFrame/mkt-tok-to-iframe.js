@@ -1,4 +1,4 @@
-//Show be placed before the </body> tag
+//To be placed before the </body> tag
 (function(){
 
     //capture the mkt_tok parameter from the URL
