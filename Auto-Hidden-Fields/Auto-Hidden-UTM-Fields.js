@@ -38,8 +38,20 @@
     };
     setTimeout(function() {
         window.mapping = {
-            "fieldA": f.readCookie("fieldA"), //capture data from cookie
-            "fieldB" : "someValue"
+            "ft_utm_source": f.readCookie("__ft_utm_source"),
+            "ft_utm_medium": f.readCookie("__ft_utm_medium"),
+            "ft_utm_campaign": f.readCookie("__ft_utm_campaign"),
+            "ft_utm_term": f.readCookie("__ft_utm_term"),
+            "ft_utm_content": f.readCookie("__ft_utm_content"),
+            "ft_referrer": f.readCookie("__ft_referrer"),
+
+            "lt_utm_source": f.readCookie("__lt_utm_source"),
+            "lt_utm_medium": f.readCookie("__lt_utm_medium"),
+            "lt_utm_campaign": f.readCookie("__lt_utm_campaign"),
+            "lt_utm_term": f.readCookie("__lt_utm_term"),
+            "lt_utm_content": f.readCookie("__lt_utm_content"),
+            "lt_referrer": f.readCookie("__lt_referrer"),
+            "gaClientId": f.getCid()
         };
 
         window.MktoForms2 = window.MktoForms2 || {whenReady: function(){}};
@@ -49,3 +61,5 @@
     }, 1500);
 
 })();
+
+//		utmParams : [ "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content" ],
