@@ -1,6 +1,6 @@
 var SHEET_NAME = "Version Control";
-var EXTENSION_URL = "";  //example: https://chrome.google.com/webstore/detail/bkbipadjogdmmnajfplbllmglobaiapc
-var EXTENSION_NAME = ""; //example: Whatslly Extension
+var EXTENSION_URL = "";  //example: https://chrome.google.com/webstore/detail/aaaabbbbbccccdddd
+var EXTENSION_NAME = ""; //example: My Extension
 var MY_EMAIL = ""; //example: myname@gmail.com
 var WEBHOOK_URL = ""; //example https://hook.integromat.com/webhook?msg=
 
