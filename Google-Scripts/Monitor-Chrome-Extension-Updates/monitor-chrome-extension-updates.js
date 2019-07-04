@@ -6,7 +6,7 @@ var WEBHOOK_URL = ""; //example https://hook.integromat.com/webhook?msg=
 
 var ss = getVersionControlSheet();
 
-function whatsllyCheckExtensionPage() {
+function checkExtensionPage() {
     var html = UrlFetchApp.fetch(EXTENSION_URL).getContentText();
 
     if(!isNewVersion(html))
