@@ -9,7 +9,7 @@ var headers = {
     "sec-fetch-site":"cross-site",
     "upgrade-insecure-requests": 1,
     "pragma": "no-cache"
-}
+};
 
 var options =  {
     "method" : "get",
@@ -23,21 +23,30 @@ function quora(url) {
 
     var vals = [];
 
-    if(url != undefined && url.indexOf("quora.com") > 0) {
+    //validate that it's a quora url
+    if(url !== undefined && url.indexOf("quora.com") > 0) {
 
+        //wait for the page to load, otherwise quora returns 403
+        Utilities.sleep(1000);
         var res = UrlFetchApp.fetch(url + "?" + new Date().getDate(), options);
         var content = res.getContentText();
 
         var xmldoc = Xml.parse(content, true);
+
+        //getting the question (page title)
         var title = getTitle(xmldoc, content);
 
+
+        //if question and title exist, get the other stats
         if (title && title.length > 0) {
 
             vals.push(url);
             vals.push(title);
             vals.push(getTopics(content));
-            vals.push(getAnswers(content));
+            vals.push(parseInt(getAnswers(content)));
 
+
+            //read the question's logs page
             var logs = getLogs(url);
             vals.push(logs.views);
             vals.push(logs.followers);
@@ -74,11 +83,13 @@ function getLogs(url){
 
     url = removeLastSlashIfExists(url) + "/log" + "?" + new Date().getDate();
 
+    Utilities.sleep(1000);
     var html = UrlFetchApp.fetch(url, options).getContentText();
+    html = html && html.length > 1000 ? html.substring(html.indexOf("QuestionStats"),html.length) : html;
     var data = {
-        views: getViews(html),
-        followers: getFollowers(html)
-    }
+        views: parseInt(getViews(html)),
+        followers: parseInt(getFollowers(html))
+    };
 
     return data;
 
@@ -109,7 +120,7 @@ function getAnswers(html){
 
     try{
         var str = html.substring(html.indexOf("answer_count") + 10,html.indexOf("answer_count") + 30 ).replace(/\D/g,'');
-        if(str == 100){
+        if(str === 100){
             return "100+";
         }else if(str.length > 0){
             return str;
