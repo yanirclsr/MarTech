@@ -2,7 +2,7 @@ UTM Capturing and Storing in Cookies
 ------------------------------------
 
 *****
-If you implement a multi-touch attribution tracking in Marketo/Salesforce, check out our solution - Touchpoints:
+If you implement a multi-touch attribution tracking in Marketo/Salesforce, check out our automatic solution - Touchpoints:
 http://bit.ly/touchpoints_by_overstack
 *****
 
