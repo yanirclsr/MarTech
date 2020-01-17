@@ -1,3 +1,9 @@
+/*****
+If you implement a multi-touch attribution tracking in Marketo/Salesforce, check out our solution - Touchpoints:
+ http://bit.ly/touchpoints_by_overstack
+*****/
+
+
 //IMPORTANT: when used in Google Tag Manager, uncomment the next line (by removing the //) and also at the end of the script
 //<script>
 

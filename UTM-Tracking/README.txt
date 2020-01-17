@@ -1,6 +1,11 @@
 UTM Capturing and Storing in Cookies
 ------------------------------------
 
+*****
+If you implement a multi-touch attribution tracking in Marketo/Salesforce, check out our solution - Touchpoints:
+http://bit.ly/touchpoints_by_overstack
+*****
+
 This Javascript code automatically captures UTM paramters of your website visitors.
 It captures both first and last interactions and storing the data in the browser cookies for 365 days (see: cookieExpiryDays variable in the code).
 Source code: utm-capture.js
